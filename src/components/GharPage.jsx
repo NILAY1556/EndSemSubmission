@@ -8,13 +8,14 @@ function GharPage() {
   const [schema, setSchema] = useState([]);
   const [items, setItems] = useState([]);
   const [newItem, setNewItem] = useState({});
+  const [schemaType, setSchemaType] = useState("Custom");
   const [editingItem, setEditingItem] = useState(null);
 
   useEffect(() => {
-    // Load the schema from localStorage
     const savedSchema = JSON.parse(localStorage.getItem("userSchema") || "[]");
+    const savedSchemaType = localStorage.getItem("schemaType") || "Custom";
     setSchema(savedSchema);
-    // Initialize newItem state based on schema
+    setSchemaType(savedSchemaType);
     const initialNewItem = savedSchema.reduce((acc, field) => {
       acc[field.name] = "";
       return acc;
@@ -143,7 +144,7 @@ function GharPage() {
             </label>
           </div>
         );
-      default: // String and other types
+      default:
         return (
           <Input
             key={field.name}
@@ -159,7 +160,9 @@ function GharPage() {
 
   return (
     <div className="min-h-screen bg-white flex flex-col space-y-6 items-center p-4">
-      <h1 className="text-3xl font-bold mb-8 text-black">CRUD Operations</h1>
+      <h1 className="text-3xl font-bold mb-8 text-black">
+        {schemaType} CRUD Operations
+      </h1>
       <div className="w-full max-w-2xl bg-gray-200 p-8 rounded-lg">
         <form onSubmit={handleSubmit} className="space-y-6">
           {schema.map((field) =>

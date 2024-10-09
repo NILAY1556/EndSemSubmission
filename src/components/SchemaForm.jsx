@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import Input from "./Input";
 import Button from "./Button";
@@ -6,7 +6,15 @@ import { PlusCircle } from "lucide-react";
 
 const SchemaForm = () => {
   const [fields, setFields] = useState([{ name: "", type: "String" }]);
+  const [schemaType, setSchemaType] = useState("Custom");
+  const [customTitle, setCustomTitle] = useState("");
   const navigate = useNavigate();
+
+  useEffect(() => {
+    if (schemaType === "Custom" && customTitle === "") {
+      setCustomTitle("Custom Schema");
+    }
+  }, [schemaType, customTitle, fields]);
 
   const addField = () => {
     setFields([...fields, { name: "", type: "String" }]);
@@ -20,6 +28,10 @@ const SchemaForm = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    if (schemaType === "Custom" && !customTitle.trim()) {
+      alert("Please provide a title for your custom schema");
+      return;
+    }
     try {
       const response = await fetch("http://localhost:5000/api/schema", {
         method: "POST",
@@ -30,9 +42,11 @@ const SchemaForm = () => {
       });
       if (response.ok) {
         alert("Schema created successfully!");
-        // Store the schema in localStorage for use in GharPage
         localStorage.setItem("userSchema", JSON.stringify(fields));
-        // Redirect to GharPage
+        localStorage.setItem(
+          "schemaType",
+          schemaType === "Custom" ? customTitle : schemaType
+        );
         navigate("/ghar");
       } else {
         alert("Failed to create schema");
@@ -78,7 +92,11 @@ const SchemaForm = () => {
 
   const handleExampleSelect = (e) => {
     const selectedExample = e.target.value;
+    setSchemaType(selectedExample);
     setFields(exampleSchemas[selectedExample]);
+    if (selectedExample !== "Custom") {
+      setCustomTitle("");
+    }
   };
 
   return (
@@ -138,27 +156,29 @@ const SchemaForm = () => {
           </h2>
         </label>
         <select
-          className="w-50 p-2 border rounded-md bg-[#dee2e6]"
           id="exampleSelect"
           onChange={handleExampleSelect}
+          value={schemaType}
+          className="w-50 p-2 border rounded-md bg-[#dee2e6]"
         >
-          <option className="bg-white text-black" value="default">
-            Custom
-          </option>
-          <option className="bg-white text-black" value="tasks">
-            Task
-          </option>
-          <option className="bg-white text-black" value="student">
-            Student
-          </option>
-          <option className="bg-white text-black" value="product">
-            Product
-          </option>
-          <option className="bg-white text-black" value="event">
-            Event
-          </option>
+          {Object.keys(exampleSchemas).map((type) => (
+            <option className="bg-white text-black" key={type} value={type}>
+              {type}
+            </option>
+          ))}
         </select>
       </div>
+      {schemaType === "Custom" && (
+        <div>
+          <label htmlFor="customTitle">Custom Schema Title: </label>
+          <Input
+            id="customTitle"
+            placeholder="Enter a title for your custom schema"
+            value={customTitle}
+            onChange={(e) => setCustomTitle(e.target.value)}
+          />
+        </div>
+      )}
       <div className="w-full bg-white max-w-2xl bg-gray-100 p-8 rounded-lg">
         <form className="flex-col space-y-5" onSubmit={handleSubmit}>
           {fields.map((field, index) => (
