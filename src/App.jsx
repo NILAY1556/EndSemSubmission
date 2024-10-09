@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { BrowserRouter as Router, Route, Routes } from 'react-router-dom';
 import GharPage from "./components/GharPage";
 import "./App.css";
 import SchemaForm from "./components/SchemaForm";
@@ -13,13 +14,14 @@ function App() {
   };
 
   return (
-    <div className="App">
-      {!schemaCreated ? (
-        <SchemaForm onSchemaCreated={handleSchemaCreated} />
-      ) : (
-        <GharPage schema={schema} />
-      )}
-    </div>
+    <Router>
+      <div className="App">
+        <Routes>
+          <Route path="/" element={<SchemaForm />} />
+          <Route path="/ghar" element={<GharPage />} />
+        </Routes>
+      </div>
+    </Router>
   );
 }
 

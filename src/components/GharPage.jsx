@@ -1,24 +1,28 @@
-import React, { useState, useEffect } from "react";
-import { Card, CardHeader, CardTitle, CardContent, CardFooter } from "./Card";
-import Button from "./Button";
-import Input from "./Input";
+import React, { useState, useEffect } from 'react';
+import { Card, CardHeader, CardTitle, CardContent, CardFooter } from './Card';
+import Button from './Button';
+import Input from './Input';
 
-function GharPage({ schema }) {
+function GharPage() {
+  const [schema, setSchema] = useState([]);
   const [items, setItems] = useState([]);
   const [newItem, setNewItem] = useState({});
   const [editingItem, setEditingItem] = useState(null);
 
   useEffect(() => {
+    // Load the schema from localStorage
+    const savedSchema = JSON.parse(localStorage.getItem('userSchema') || '[]');
+    setSchema(savedSchema);
     fetchItems();
   }, []);
 
   const fetchItems = async () => {
     try {
-      const response = await fetch("http://localhost:5000/api/items");
+      const response = await fetch('http://localhost:5000/api/items');
       const data = await response.json();
       setItems(data);
     } catch (error) {
-      console.error("Error fetching items:", error);
+      console.error('Error fetching items:', error);
     }
   };
 
@@ -43,45 +47,42 @@ function GharPage({ schema }) {
       setNewItem({});
       setEditingItem(null);
     } catch (error) {
-      console.error("Error submitting item:", error);
+      console.error('Error submitting item:', error);
     }
   };
 
   const createItem = async (item) => {
-    const response = await fetch("http://localhost:5000/api/items", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
+    const response = await fetch('http://localhost:5000/api/items', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify(item),
     });
     if (!response.ok) {
-      throw new Error("Failed to create item");
+      throw new Error('Failed to create item');
     }
   };
 
   const updateItem = async (item) => {
-    const response = await fetch(
-      `http://localhost:5000/api/items/${item._id}`,
-      {
-        method: "PUT",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(item),
-      }
-    );
+    const response = await fetch(`http://localhost:5000/api/items/${item._id}`, {
+      method: 'PUT',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(item),
+    });
     if (!response.ok) {
-      throw new Error("Failed to update item");
+      throw new Error('Failed to update item');
     }
   };
 
   const deleteItem = async (id) => {
     try {
       const response = await fetch(`http://localhost:5000/api/items/${id}`, {
-        method: "DELETE",
+        method: 'DELETE',
       });
       if (response.ok) {
         fetchItems();
       }
     } catch (error) {
-      console.error("Error deleting item:", error);
+      console.error('Error deleting item:', error);
     }
   };
 
@@ -95,15 +96,13 @@ function GharPage({ schema }) {
             name={field.name}
             placeholder={field.name}
             type={field.type.toLowerCase()}
-            value={(editingItem || newItem)[field.name] || ""}
+            value={(editingItem || newItem)[field.name] || ''}
             onChange={handleInputChange}
           />
         ))}
-        <Button type="submit">{editingItem ? "Update" : "Add"} Item</Button>
+        <Button type="submit">{editingItem ? 'Update' : 'Add'} Item</Button>
         {editingItem && (
-          <Button type="button" onClick={() => setEditingItem(null)}>
-            Cancel
-          </Button>
+          <Button type="button" onClick={() => setEditingItem(null)}>Cancel</Button>
         )}
       </form>
       <div>
@@ -113,14 +112,9 @@ function GharPage({ schema }) {
               <CardTitle>{item._id}</CardTitle>
             </CardHeader>
             <CardContent>
-              {Object.entries(item).map(
-                ([key, value]) =>
-                  key !== "_id" && (
-                    <p key={key}>
-                      {key}: {value}
-                    </p>
-                  )
-              )}
+              {Object.entries(item).map(([key, value]) => (
+                key !== '_id' && <p key={key}>{key}: {value}</p>
+              ))}
             </CardContent>
             <CardFooter>
               <Button onClick={() => setEditingItem(item)}>Edit</Button>
@@ -134,6 +128,7 @@ function GharPage({ schema }) {
 }
 
 export default GharPage;
+
 
 // import React, { useState, useEffect } from 'react';
 // import Button from './Button';

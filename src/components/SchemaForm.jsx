@@ -1,12 +1,14 @@
-import React, { useState } from "react";
-import Input from "./Input";
-import Button from "./Button";
+import React, { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
+import Input from './Input';
+import Button from './Button';
 
-const SchemaForm = ({ onSchemaCreated }) => {
-  const [fields, setFields] = useState([{ name: "", type: "String" }]);
+const SchemaForm = () => {
+  const [fields, setFields] = useState([{ name: '', type: 'String' }]);
+  const navigate = useNavigate();
 
   const addField = () => {
-    setFields([...fields, { name: "", type: "String" }]);
+    setFields([...fields, { name: '', type: 'String' }]);
   };
 
   const handleFieldChange = (index, key, value) => {
@@ -18,22 +20,25 @@ const SchemaForm = ({ onSchemaCreated }) => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
-      const response = await fetch("http://localhost:5000/api/schema", {
-        method: "POST",
+      const response = await fetch('http://localhost:5000/api/schema', {
+        method: 'POST',
         headers: {
-          "Content-Type": "application/json",
+          'Content-Type': 'application/json',
         },
         body: JSON.stringify({ fields }),
       });
       if (response.ok) {
-        alert("Schema created successfully!");
-        onSchemaCreated(fields); // Pass the created schema back to parent
+        alert('Schema created successfully!');
+        // Store the schema in localStorage for use in GharPage
+        localStorage.setItem('userSchema', JSON.stringify(fields));
+        // Redirect to GharPage
+        navigate('/ghar');
       } else {
-        alert("Failed to create schema");
+        alert('Failed to create schema');
       }
     } catch (error) {
-      console.error("Error:", error);
-      alert("An error occurred");
+      console.error('Error:', error);
+      alert('An error occurred');
     }
   };
 
@@ -45,11 +50,11 @@ const SchemaForm = ({ onSchemaCreated }) => {
           <Input
             placeholder="Field name"
             value={field.name}
-            onChange={(e) => handleFieldChange(index, "name", e.target.value)}
+            onChange={(e) => handleFieldChange(index, 'name', e.target.value)}
           />
           <select
             value={field.type}
-            onChange={(e) => handleFieldChange(index, "type", e.target.value)}
+            onChange={(e) => handleFieldChange(index, 'type', e.target.value)}
           >
             <option value="String">String</option>
             <option value="Number">Number</option>
@@ -58,9 +63,7 @@ const SchemaForm = ({ onSchemaCreated }) => {
           </select>
         </div>
       ))}
-      <Button type="button" onClick={addField}>
-        Add Field
-      </Button>
+      <Button type="button" onClick={addField}>Add Field</Button>
       <Button type="submit">Create Schema</Button>
     </form>
   );
