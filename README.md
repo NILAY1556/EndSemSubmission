@@ -19,7 +19,7 @@ cookie-cutter CRUD applications that can barely handle a to-do list without fall
 - **The Imaginary Pet Collection**: Manage a menagerie of mythical creatures, from unicorns to dragons!
 - **The "Which Excuse Haven't I Used Yet?" Database**: Perfect for serial late-comers and deadline missers!
 
-## The some flop ideas to you can curd on
+## The some flop ideas to you can crud on
 
 - **To-Do List**: Sure, it can handle your to-do list, but it can also prioritize your tasks by how much procrastination they will cause.
 - **E-Commerce Cart**: Not only can it manage your shopping cart, but it will also warn you when you're about to make impulse purchases (like that third pair of socks).
